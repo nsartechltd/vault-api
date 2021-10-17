@@ -1,0 +1,19 @@
+{
+  "name": "money-vault-api",
+  "version": "1.0.0",
+  "description": "API for Money Vault application",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nsartechltd/money-vault-api.git"
+  },
+  "author": "NSAR-Tech Ltd",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nsartechltd/money-vault-api/issues"
+  },
+  "homepage": "https://github.com/nsartechltd/money-vault-api#readme"
+}
