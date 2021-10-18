@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "removeComments": true
+  },
+  "include": ["src"],
+  "exclude": ["src/test**"],
+  "ts-node": {
+    "transpileOnly": true,
+    "ignore": [
+      "/node_modules/",
+      "/src/test-smoke/",
+      "/src/test-integration/",
+      "/src/test/"
+    ]
+  }
+}

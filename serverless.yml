@@ -1,0 +1,23 @@
+service: nsartech-money-vault-api
+
+plugins:
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: ${opt:region, 'eu-west-2'}
+  stage: ${opt:stage, 'dev'}
+
+custom:
+  serverless-offline:
+    host: 0.0.0.0
+    apiKey: "test-key"
+
+functions:
+  trueLayerRedirect:
+    handler: src/functions/trueLayer.redirect
+    events:
+      - http:
+          path: /truelayer/redirect
+          method: get

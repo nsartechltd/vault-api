@@ -1,2 +1,2 @@
-# Money Vault API
-API for Money Vault application
+# Vault API
+API for Vault application
