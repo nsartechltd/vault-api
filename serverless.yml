@@ -8,11 +8,16 @@ provider:
   runtime: nodejs14.x
   region: ${opt:region, 'eu-west-2'}
   stage: ${opt:stage, 'dev'}
+  lambdaHashingVersion: 20201221
+  environment:
+    TRUE_LAYER_API_URL: https://auth.truelayer.com
+    TRUE_LAYER_CLIENT_ID: xxxxxx
+    TRUE_LAYER_CLIENT_SECRET: xxxx
+    TRUE_LAYER_REDIRECT_URL: xxxxx
 
 custom:
   serverless-offline:
     host: 0.0.0.0
-    apiKey: "test-key"
 
 functions:
   trueLayerRedirect:
