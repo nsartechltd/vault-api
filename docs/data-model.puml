@@ -1,0 +1,44 @@
+@startuml
+title Vault Data Model
+hide circle
+
+skinparam class {
+  backgroundColor #white
+}
+
+entity "provider" {
+  *id: number
+  --
+  name: text
+  trueLayerId: text
+}
+
+entity "user" {
+  *id: number
+  --
+  name: text
+  email: text
+}
+
+entity "user_token" {
+  *id: number
+  --
+  access_token: text
+  refresh_token: text
+  expiry: number
+  scope: text
+}
+
+entity "user_provider" {
+  *id: number
+  --
+  *user_id: number
+  *provider_id: number
+  *user_token_id: number
+}
+
+user_provider --> user
+user_provider --> provider
+user_provider --> user_token
+
+@enduml

@@ -10,19 +10,20 @@ provider:
   stage: ${opt:stage, 'dev'}
   lambdaHashingVersion: 20201221
   environment:
-    TRUE_LAYER_API_URL: https://auth.truelayer.com
-    TRUE_LAYER_CLIENT_ID: xxxxxx
-    TRUE_LAYER_CLIENT_SECRET: xxxx
-    TRUE_LAYER_REDIRECT_URL: xxxxx
+    TRUE_LAYER_API_URL: ${env:TRUE_LAYER_API_URL}
+    TRUE_LAYER_CLIENT_ID: ${env:TRUE_LAYER_CLIENT_ID}
+    TRUE_LAYER_CLIENT_SECRET: ${env:TRUE_LAYER_CLIENT_SECRET}
+    TRUE_LAYER_REDIRECT_URL: ${env:TRUE_LAYER_REDIRECT_URL}
 
 custom:
   serverless-offline:
     host: 0.0.0.0
+    httpPort: 3001
 
 functions:
-  trueLayerRedirect:
-    handler: src/functions/trueLayer.redirect
+  starlingAuth:
+    handler: src/functions/trueLayer.authCallback
     events:
       - http:
-          path: /truelayer/redirect
+          path: /api/authCallback
           method: get
