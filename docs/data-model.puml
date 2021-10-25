@@ -20,7 +20,7 @@ entity "user" {
   email: text
 }
 
-entity "user_token" {
+entity "token" {
   *id: number
   --
   access_token: text
@@ -34,11 +34,11 @@ entity "user_provider" {
   --
   *user_id: number
   *provider_id: number
-  *user_token_id: number
+  *token_id: number
 }
 
 user_provider --> user
 user_provider --> provider
-user_provider --> user_token
+user_provider --> token
 
 @enduml

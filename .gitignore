@@ -1,3 +1,8 @@
+# Dependencies
 node_modules/
 
+# ENV files
 .env
+
+# Built TypeScript files
+build

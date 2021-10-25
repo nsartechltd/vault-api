@@ -2,6 +2,7 @@ service: nsartech-money-vault-api
 
 plugins:
   - serverless-offline
+  - serverless-dotenv-plugin
 
 provider:
   name: aws
@@ -14,6 +15,12 @@ provider:
     TRUE_LAYER_CLIENT_ID: ${env:TRUE_LAYER_CLIENT_ID}
     TRUE_LAYER_CLIENT_SECRET: ${env:TRUE_LAYER_CLIENT_SECRET}
     TRUE_LAYER_REDIRECT_URL: ${env:TRUE_LAYER_REDIRECT_URL}
+    ENVIRONMENT: ${self:provider.stage}
+    NODE_ENV: ${env:NODE_ENV}
+    DB_HOST: ${env:DB_HOST}
+    DB_USERNAME: ${env:DB_USERNAME}
+    DB_PASSWORD: ${env:DB_PASSWORD}
+    DB_DATABASE: ${env:DB_DATABASE}
 
 custom:
   serverless-offline:
@@ -22,7 +29,7 @@ custom:
 
 functions:
   starlingAuth:
-    handler: src/functions/trueLayer.authCallback
+    handler: build/src/functions/trueLayer.authCallback
     events:
       - http:
           path: /api/authCallback
