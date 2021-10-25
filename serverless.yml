@@ -34,3 +34,9 @@ functions:
       - http:
           path: /api/authCallback
           method: get
+  getProviders:
+    handler: build/src/functions/provider.getProviders
+    events:
+      - http:
+          path: /api/providers
+          method: get

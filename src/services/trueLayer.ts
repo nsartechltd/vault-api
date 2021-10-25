@@ -1,12 +1,13 @@
 import fetch from 'node-fetch';
 import type { Response } from 'node-fetch';
 import type { APIGatewayEvent } from 'aws-lambda';
+import { Sequelize } from 'sequelize/types';
 
 import config from '../config';
 import base from './base';
 
 export const authenticateProvider = async (event: APIGatewayEvent) =>
-  base(async (sequelize) => {
+  base(async (sequelize: Sequelize) => {
     const { code } = event.queryStringParameters;
 
     console.log('OAuth code received from UI: ', code);

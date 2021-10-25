@@ -8,12 +8,12 @@ export default async (fn) => {
   try {
     await sequelize.authenticate();
 
-    const { statusCode, body = null } = await fn(sequelize);
+    const { statusCode = 200, body = null } = await fn(sequelize);
     console.log('[Base] Function executed!');
 
     return {
       statusCode,
-      body,
+      body: JSON.stringify(body),
     };
   } catch (err) {
     console.error('[Base] Error in process: ', err);
