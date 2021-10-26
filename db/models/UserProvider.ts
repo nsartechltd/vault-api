@@ -1,7 +1,14 @@
-import { Model } from 'sequelize';
+import { Model, Sequelize } from 'sequelize';
 
-export default (sequelize, DataTypes) => {
-  class UserProvider extends Model {
+type UserProviderType = {
+  id?: number;
+  userId: number;
+  providerId: number;
+  tokenId: number;
+};
+
+export default (sequelize: Sequelize, DataTypes) => {
+  class UserProvider extends Model<UserProviderType> {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.

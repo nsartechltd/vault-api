@@ -1,13 +1,14 @@
 import fetch from 'node-fetch';
 import type { Response } from 'node-fetch';
 import type { APIGatewayEvent } from 'aws-lambda';
-import { Sequelize } from 'sequelize/types';
 
 import config from '../config';
 import base from './base';
 
+console.log('CONFIG LOADED: ', JSON.stringify(config));
+
 export const authenticateProvider = async (event: APIGatewayEvent) =>
-  base(async (sequelize: Sequelize) => {
+  base(async (sequelize) => {
     const { code } = event.queryStringParameters;
 
     console.log('OAuth code received from UI: ', code);
@@ -32,6 +33,12 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
     const data = await response.json();
 
     console.log('Data received from request: ', data);
+
+    if (!data.access_token) {
+      return {
+        statusCode: 401,
+      };
+    }
 
     const { Token, UserProvider } = sequelize.models;
 

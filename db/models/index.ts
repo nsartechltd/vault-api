@@ -8,9 +8,14 @@ import User from './User';
 import UserProvider from './UserProvider';
 
 const dbConfig = config[env];
-
-const db = {};
 const sequelize = new Sequelize(dbConfig);
+
+type DBType = {
+  sequelize?: typeof sequelize;
+  Sequelize?: typeof Sequelize;
+};
+
+const db: DBType = {};
 
 const models = [Provider, Token, User, UserProvider];
 
@@ -19,7 +24,7 @@ models.forEach((model) => {
   db[instance.name] = model;
 });
 
-Object.keys(db).forEach((modelName) => {
+Object.keys(db).forEach((modelName: string) => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }

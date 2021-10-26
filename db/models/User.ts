@@ -1,7 +1,13 @@
-import { Model } from 'sequelize';
+import { Model, Sequelize } from 'sequelize';
 
-export default (sequelize, DataTypes) => {
-  class User extends Model {
+type UserType = {
+  id?: number;
+  name: string;
+  email: string;
+};
+
+export default (sequelize: Sequelize, DataTypes) => {
+  class User extends Model<UserType> {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.

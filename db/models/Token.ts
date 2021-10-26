@@ -1,6 +1,6 @@
-import { Model } from 'sequelize';
+import { Model, Sequelize } from 'sequelize';
 
-export type TokenProvider = {
+type TokenType = {
   id?: number;
   accessToken: string;
   refreshToken: string;
@@ -8,8 +8,8 @@ export type TokenProvider = {
   scope: string;
 };
 
-export default (sequelize, DataTypes) => {
-  class Token extends Model<TokenProvider> {
+export default (sequelize: Sequelize, DataTypes) => {
+  class Token extends Model<TokenType> {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.

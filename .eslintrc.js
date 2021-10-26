@@ -2,13 +2,13 @@ module.exports = {
   env: {
     es6: true,
     node: true,
-    jest: true
+    jest: true,
   },
   parser: '@typescript-eslint/parser',
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
-    'prettier'
+    'prettier',
   ],
   rules: {
     indent: 0,
@@ -19,15 +19,11 @@ module.exports = {
     'no-eval': ['error'],
     eqeqeq: ['error'],
     'max-params': ['error', 6],
-    'prettier/prettier': 2
+    'prettier/prettier': 2,
   },
   parserOptions: {
     ecmaVersion: 2019,
-    sourceType: 'module'
+    sourceType: 'module',
   },
-  plugins: [
-    'jest',
-    '@typescript-eslint',
-    'prettier'
-  ],
+  plugins: ['jest', '@typescript-eslint', 'prettier'],
 };
