@@ -6,3 +6,5 @@ node_modules/
 
 # Built TypeScript files
 build
+
+.DS_Store
