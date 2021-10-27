@@ -21,7 +21,7 @@ const models = [Provider, Token, User, UserProvider];
 
 models.forEach((model) => {
   const instance = model(sequelize, DataTypes);
-  db[instance.name] = model;
+  db[instance.name] = instance;
 });
 
 Object.keys(db).forEach((modelName: string) => {

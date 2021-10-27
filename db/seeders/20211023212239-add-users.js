@@ -8,5 +8,5 @@ module.exports = {
         updated_at: new Date(),
       },
     ]),
-  down: async (queryInterface) => await queryInterface.bulkDelete('user'),
+  down: async (queryInterface) => await queryInterface.bulkDelete('user', {}),
 };

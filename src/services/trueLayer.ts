@@ -9,6 +9,8 @@ console.log('CONFIG LOADED: ', JSON.stringify(config));
 
 export const authenticateProvider = async (event: APIGatewayEvent) =>
   base(async (sequelize) => {
+    console.log('Event receieved: ', JSON.stringify(event));
+
     const { code } = event.queryStringParameters;
 
     console.log('OAuth code received from UI: ', code);

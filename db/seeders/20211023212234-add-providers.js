@@ -17,5 +17,6 @@ module.exports = {
         updated_at,
       },
     ]),
-  down: async (queryInterface) => await queryInterface.bulkDelete('provider'),
+  down: async (queryInterface) =>
+    await queryInterface.bulkDelete('provider', {}),
 };

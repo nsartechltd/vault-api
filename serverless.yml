@@ -40,3 +40,9 @@ functions:
       - http:
           path: /api/providers
           method: get
+  getUserProviders:
+    handler: build/src/functions/user.getProviders
+    events:
+      - http:
+          path: /api/user/{userId}/providers
+          method: get
