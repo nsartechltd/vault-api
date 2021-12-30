@@ -1,11 +1,10 @@
 import fetch from 'node-fetch';
+import jwt from 'jsonwebtoken';
 import type { Response } from 'node-fetch';
 import type { APIGatewayEvent } from 'aws-lambda';
 
 import config from '../config';
 import base from './base';
-
-console.log('CONFIG LOADED: ', JSON.stringify(config));
 
 export const authenticateProvider = async (event: APIGatewayEvent) =>
   base(async (sequelize) => {
@@ -40,19 +39,23 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
       };
     }
 
-    const { Token, UserProvider } = sequelize.models;
+    const { Token, Provider } = sequelize.models;
 
-    const token = await Token.create({
+    const { connector_id: providerId } = jwt.decode(data.access_token);
+
+    console.log('PROVIDER ID FOUND:', providerId);
+
+    const provider = await Provider.findOne({ where: { providerId } });
+
+    console.log('PROVIDER FOUND:', provider);
+
+    await Token.create({
       accessToken: data.access_token,
       refreshToken: data.refresh_token,
       expiry: data.expiry_time,
       scope: data.scope,
-    });
-
-    await UserProvider.create({
       userId: 1,
-      providerId: 1,
-      tokenId: token.id,
+      providerId: provider.id,
     });
 
     return {

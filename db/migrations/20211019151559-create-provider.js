@@ -1,5 +1,5 @@
 module.exports = {
-  up: async (queryInterface, Sequelize) =>
+  up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable('provider', {
       id: {
         allowNull: false,
@@ -10,20 +10,28 @@ module.exports = {
       name: {
         type: Sequelize.STRING,
       },
-      trueLayerId: {
+      providerId: {
         type: Sequelize.STRING,
-        field: 'true_layer_id',
+        field: 'provider_id',
+      },
+      country: {
+        type: Sequelize.STRING,
+      },
+      logoUrl: {
+        type: Sequelize.STRING,
+        field: 'logo_url',
       },
       createdAt: {
         allowNull: false,
-        field: 'created_at',
         type: Sequelize.DATE,
+        field: 'created_at',
       },
       updatedAt: {
         allowNull: false,
-        field: 'updated_at',
         type: Sequelize.DATE,
+        field: 'updated_at',
       },
-    }),
+    });
+  },
   down: async (queryInterface) => await queryInterface.dropTable('provider'),
 };

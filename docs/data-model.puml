@@ -10,7 +10,8 @@ entity "provider" {
   *id: number
   --
   name: text
-  trueLayerId: text
+  providerId: number
+  country: string
 }
 
 entity "user" {
@@ -23,22 +24,14 @@ entity "user" {
 entity "token" {
   *id: number
   --
+  *user_id: number <FK>
+  *provider_id: number <FK>
   access_token: text
   refresh_token: text
   expiry: number
   scope: text
 }
-
-entity "user_provider" {
-  *id: number
-  --
-  *user_id: number
-  *provider_id: number
-  *token_id: number
-}
-
-user_provider --> user
-user_provider --> provider
-user_provider --> token
+token --> user
+token --> provider
 
 @enduml

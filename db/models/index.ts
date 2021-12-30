@@ -5,7 +5,6 @@ import config from '../config';
 import Provider from './Provider';
 import Token from './Token';
 import User from './User';
-import UserProvider from './UserProvider';
 
 const dbConfig = config[env];
 const sequelize = new Sequelize(dbConfig);
@@ -17,15 +16,17 @@ type DBType = {
 
 const db: DBType = {};
 
-const models = [Provider, Token, User, UserProvider];
+const models = [Provider, Token, User];
 
 models.forEach((model) => {
   const instance = model(sequelize, DataTypes);
-  db[instance.name] = model;
+  db[instance.name] = instance;
 });
 
 Object.keys(db).forEach((modelName: string) => {
+  console.log(`${db[modelName]} present!`);
   if (db[modelName].associate) {
+    console.log(`${db[modelName]} has associate function!`);
     db[modelName].associate(db);
   }
 });

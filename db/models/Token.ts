@@ -2,6 +2,8 @@ import { Model, Sequelize } from 'sequelize';
 
 type TokenType = {
   id?: number;
+  userId: number;
+  providerId: number;
   accessToken: string;
   refreshToken: string;
   expiry: number;
@@ -16,7 +18,8 @@ export default (sequelize: Sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Token.hasMany(models.UserProvider);
+      Token.belongsTo(models.Provider);
+      Token.belongsTo(models.User);
     }
   }
 
@@ -26,6 +29,8 @@ export default (sequelize: Sequelize, DataTypes) => {
       refreshToken: DataTypes.STRING,
       expiry: DataTypes.INTEGER,
       scope: DataTypes.STRING,
+      userId: DataTypes.INTEGER,
+      providerId: DataTypes.INTEGER,
     },
     {
       sequelize,

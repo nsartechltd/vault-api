@@ -3,7 +3,9 @@ import { Model, Sequelize } from 'sequelize';
 type ProviderType = {
   id?: number;
   name: string;
-  trueLayerId: string;
+  providerId: string;
+  country: string;
+  logoUrl: string;
 };
 
 export default (sequelize: Sequelize, DataTypes) => {
@@ -14,14 +16,16 @@ export default (sequelize: Sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Provider.hasMany(models.UserProvider);
+      Provider.hasMany(models.Token);
     }
   }
 
   Provider.init(
     {
       name: DataTypes.STRING,
-      trueLayerId: DataTypes.STRING,
+      providerId: DataTypes.STRING,
+      country: DataTypes.STRING,
+      logoUrl: DataTypes.STRING,
     },
     {
       sequelize,

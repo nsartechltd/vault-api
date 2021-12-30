@@ -21,6 +21,24 @@ module.exports = {
       scope: {
         type: Sequelize.STRING,
       },
+      userId: {
+        type: Sequelize.INTEGER,
+        field: 'user_id',
+        references: {
+          model: 'User',
+          key: 'id',
+          as: 'userId',
+        },
+      },
+      providerId: {
+        type: Sequelize.INTEGER,
+        field: 'provider_id',
+        references: {
+          model: 'Provider',
+          key: 'id',
+          as: 'providerId',
+        },
+      },
       createdAt: {
         allowNull: false,
         field: 'created_at',

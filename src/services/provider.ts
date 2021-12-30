@@ -1,21 +1,60 @@
-import { Sequelize } from 'sequelize/types';
+import fetch from 'node-fetch';
 
 import base from './base';
+import config from '../config';
 
-const parseProviderForAPI = (provider) => ({
-  name: provider.name,
-  trueLayerId: provider.trueLayerId,
-});
+type Provider = {
+  provider_id: string;
+  display_name: string;
+  country: string;
+  logo_url: string;
+  scopes: string[];
+};
+
+const SUPPORTED_PROVIDERS = [
+  'ob-natwest',
+  'ob-hsbc',
+  'ob-tide',
+  'ob-tesco',
+  'ob-halifax',
+  'ob-lloyds',
+  'ob-rbs',
+  'ob-santander',
+  'ob-tsb',
+  'ob-monzo',
+  'ob-barclays',
+  'ob-virgin-money',
+  'oauth-starling',
+  'ob-first-direct',
+  'ob-bos',
+  'ob-nationwide',
+  'ob-revolut',
+];
+
+/**
+ * We only support providers with the following criteria:
+ *  - Based in the UK
+ *  - Has the 'accounts' scope
+ *  - Well known provider in the UK
+ */
+const filterProviders = (provider) =>
+  provider.country === 'uk' &&
+  SUPPORTED_PROVIDERS.includes(provider.provider_id);
 
 export const retrieveProviders = async () =>
-  base(async (sequelize: Sequelize) => {
-    const { Provider } = sequelize.models;
+  base(async () => {
+    const {
+      trueLayer: { apiUrl, clientId },
+    } = config;
 
-    const providers = await Provider.findAll();
+    const response = await fetch(
+      `${apiUrl}/api/providers?clientId=${clientId}`
+    );
+    const body: Provider[] = await response.json();
 
     return {
       body: {
-        providers: providers.map(parseProviderForAPI),
+        providers: body.filter(filterProviders),
       },
     };
   });
