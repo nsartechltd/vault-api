@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import type { APIGatewayEvent } from 'aws-lambda';
 
 import base from './base';
 import config from '../config';
@@ -41,7 +42,7 @@ const filterProviders = (provider) =>
   provider.country === 'uk' &&
   SUPPORTED_PROVIDERS.includes(provider.provider_id);
 
-export const retrieveProviders = async () =>
+export const retrieveProviders = () =>
   base(async () => {
     const {
       trueLayer: { apiUrl, clientId },
@@ -55,6 +56,27 @@ export const retrieveProviders = async () =>
     return {
       body: {
         providers: body.filter(filterProviders),
+      },
+    };
+  });
+
+export const retrieveUserProviders = (event: APIGatewayEvent) =>
+  base(async (sequelize) => {
+    const {
+      pathParameters: { userId },
+    } = event;
+
+    const { Provider, Token } = sequelize.models;
+
+    const providers = await Token.findAll({
+      where: { userId },
+      attributes: ['id'],
+      include: Provider,
+    });
+
+    return {
+      body: {
+        providers,
       },
     };
   });
