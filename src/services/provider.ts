@@ -71,7 +71,10 @@ export const retrieveUserProviders = (event: APIGatewayEvent) =>
     const providers = await Token.findAll({
       where: { userId },
       attributes: ['id'],
-      include: Provider,
+      include: {
+        model: Provider,
+        attributes: ['id', 'name', 'providerId', 'country', 'logoUrl'],
+      },
     });
 
     return {

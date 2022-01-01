@@ -28,7 +28,7 @@ custom:
     httpPort: 3001
 
 functions:
-  starlingAuth:
+  trueLayerCallback:
     handler: build/src/functions/trueLayer.authCallback
     events:
       - http:
