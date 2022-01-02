@@ -7,7 +7,8 @@
     "test": "jest",
     "build": "npx tsc",
     "lint": "npx eslint --max-warnings=0 ./src",
-    "pretty:write": "npx prettier --write './src/**/*.ts'",
+    "pretty:write": "npx prettier --write './{src,db}/**/*.ts'",
+    "pretty:check": "npx prettier --check './{src,db}/**/*.ts'",
     "db:seed": "npx sequelize-cli db:seed:all --debug",
     "db:migrate": "npx sequelize-cli db:migrate --debug"
   },
