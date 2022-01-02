@@ -25,7 +25,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         field: 'user_id',
         references: {
-          model: 'User',
+          model: 'user',
           key: 'id',
           as: 'userId',
         },
@@ -34,7 +34,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         field: 'provider_id',
         references: {
-          model: 'Provider',
+          model: 'provider',
           key: 'id',
           as: 'providerId',
         },
