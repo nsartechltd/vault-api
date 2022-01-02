@@ -1,0 +1,45 @@
+version: "3"
+services:
+  db:
+    container_name: db
+    image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: vault
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: rootpassword
+    healthcheck:
+      test: mysqladmin ping --password=rootpassword
+      interval: 10s
+      timeout: 2s
+      retries: 10
+    ports:
+      - 3306:3306
+
+  api:
+    container_name: api
+    build: .
+    tty: true
+    ports:
+      - "3001:3001"
+    environment:
+      LOG_LEVEL: debug
+      DB_HOST: db
+      DB_READER_HOST: db
+      DB_DATABASE: vault
+      DB_USERNAME: user
+      DB_PASSWORD: password
+      DEBUG: "sequelize:*"
+    volumes:
+      - ./:/home/node/app:cached
+    command: sh -c '
+      npx sequelize-cli db:migrate:undo:all &&
+      npm run db:migrate &&
+      npx sequelize-cli db:seed:undo:all &&
+      npm run db:seed &&
+      npx sls config credentials --overwrite --provider aws --key KEY --secret SECRET &&
+      npm start'
+    depends_on:
+      db:
+        condition: service_healthy
