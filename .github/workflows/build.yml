@@ -28,6 +28,9 @@ jobs:
       - name: Run Linting
         run: npm run lint
 
+      - name: Build Stack
+        run: docker-compose up -d
+
       - name: Run Unit Tests
         run: npm test -- --runInBand
 
