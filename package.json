@@ -49,6 +49,7 @@
   },
   "jest": {
     "reporters": [
+      "default",
       "jest-junit"
     ]
   }
