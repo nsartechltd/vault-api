@@ -31,7 +31,7 @@ jobs:
       - name: Build Stack
         run: docker-compose up -d
 
-      - name: Run Unit Tests
+      - name: Run Tests
         run: npm test -- --runInBand
 
       - name: Test Report
@@ -41,3 +41,7 @@ jobs:
           name: test-results
           path: junit.xml
           reporter: jest-junit
+
+      - name: Docker Status - Fail
+        run: docker-compose ps && docker-compose logs -t
+        if: failure()
