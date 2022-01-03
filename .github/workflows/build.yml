@@ -29,7 +29,12 @@ jobs:
         run: npm run lint
 
       - name: Build Stack
-        run: docker-compose up -d
+        run: docker compose up -d
+        env:
+          TRUE_LAYER_REDIRECT_URL: ${{ secrets.TRUE_LAYER_REDIRECT_URL }}
+          TRUE_LAYER_CLIENT_SECRET: ${{ secrets.TRUE_LAYER_CLIENT_SECRET }}
+          TRUE_LAYER_CLIENT_ID: ${{ secrets.TRUE_LAYER_CLIENT_ID }}
+          TRUE_LAYER_API_URL: ${{ secrets.TRUE_LAYER_API_URL }}
 
       - name: Run Tests
         run: npm test -- --runInBand
