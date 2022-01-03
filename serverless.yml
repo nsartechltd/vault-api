@@ -2,7 +2,6 @@ service: nsartech-money-vault-api
 
 plugins:
   - serverless-offline
-  - serverless-dotenv-plugin
 
 provider:
   name: aws

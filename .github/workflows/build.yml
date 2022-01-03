@@ -28,15 +28,14 @@ jobs:
       - name: Run Linting
         run: npm run lint
 
+      - name: Set Env Vars
+        run: export TRUE_LAYER_REDIRECT_URL=${{ secrets.TRUE_LAYER_REDIRECT_URL }} && export TRUE_LAYER_CLIENT_SECRET=${{ secrets.TRUE_LAYER_CLIENT_SECRET }} && export TRUE_LAYER_CLIENT_ID=${{ secrets.TRUE_LAYER_CLIENT_ID }} && export TRUE_LAYER_API_URL=${{ secrets.TRUE_LAYER_API_URL }}
+
       - name: Build Stack
         run: docker compose up -d
-        env:
-          TRUE_LAYER_REDIRECT_URL: ${{ secrets.TRUE_LAYER_REDIRECT_URL }}
-          TRUE_LAYER_CLIENT_SECRET: ${{ secrets.TRUE_LAYER_CLIENT_SECRET }}
-          TRUE_LAYER_CLIENT_ID: ${{ secrets.TRUE_LAYER_CLIENT_ID }}
-          TRUE_LAYER_API_URL: ${{ secrets.TRUE_LAYER_API_URL }}
 
-      - run: docker compose logs -t
+      - name: Wait For Stack
+        run: sleep 30
 
       - name: Run Tests
         run: npm test -- --runInBand
