@@ -38,7 +38,7 @@ services:
     volumes:
       - ./:/home/node/app:cached
     command: sh -c '
-      echo "TRUE LAYER URL" && $TRUE_LAYER_API_URL && echo "TRUE LAYER CLIENT ID" && echo $TRUE_LAYER_CLIENT_ID && npx sequelize-cli db:migrate:undo:all &&
+      echo "TRUE LAYER URL" && echo $TRUE_LAYER_API_URL && echo "TRUE LAYER CLIENT ID" && echo $TRUE_LAYER_CLIENT_ID && npx sequelize-cli db:migrate:undo:all &&
       npm run db:migrate &&
       npx sequelize-cli db:seed:undo:all &&
       npm run db:seed &&
