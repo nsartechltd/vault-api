@@ -36,6 +36,8 @@ jobs:
           TRUE_LAYER_CLIENT_ID: ${{ secrets.TRUE_LAYER_CLIENT_ID }}
           TRUE_LAYER_API_URL: ${{ secrets.TRUE_LAYER_API_URL }}
 
+      - run: docker compose logs -t
+
       - name: Run Tests
         run: npm test -- --runInBand
 
@@ -48,5 +50,5 @@ jobs:
           reporter: jest-junit
 
       - name: Docker Status - Fail
-        run: docker-compose ps && docker-compose logs -t
+        run: docker compose ps && docker compose logs -t
         if: failure()
