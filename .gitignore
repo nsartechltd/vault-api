@@ -5,7 +5,7 @@ node_modules/
 .env
 
 # Built TypeScript files
-build
+.build
 
 .DS_Store
 

@@ -24,9 +24,7 @@ models.forEach((model) => {
 });
 
 Object.keys(db).forEach((modelName: string) => {
-  console.log(`${db[modelName]} present!`);
   if (db[modelName].associate) {
-    console.log(`${db[modelName]} has associate function!`);
     db[modelName].associate(db);
   }
 });
