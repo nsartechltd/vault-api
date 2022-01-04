@@ -43,7 +43,7 @@ services:
       npx sequelize-cli db:seed:undo:all &&
       npm run db:seed &&
       npx sls config credentials --overwrite --provider aws --key KEY --secret SECRET &&
-      sudo npm start'
+      npm start'
     depends_on:
       db:
         condition: service_healthy
