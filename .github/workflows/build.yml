@@ -33,7 +33,6 @@ jobs:
 
       - name: Build Stack
         run: docker compose up -d
-        options: --user sudo
 
       - name: Wait For Stack
         run: sleep 30
