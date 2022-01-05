@@ -1,8 +1,8 @@
-service: nsartech-money-vault-api
+service: nsartech-vault-api
 
 plugins:
+  - serverless-plugin-typescript
   - serverless-offline
-  - serverless-dotenv-plugin
 
 provider:
   name: aws
@@ -35,7 +35,7 @@ functions:
           path: /api/authCallback
           method: get
   getProviders:
-    handler: build/src/functions/provider.getProviders
+    handler: src/functions/provider.getProviders
     events:
       - http:
           path: /api/providers
