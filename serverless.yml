@@ -29,7 +29,7 @@ custom:
 
 functions:
   trueLayerCallback:
-    handler: build/src/functions/trueLayer.authCallback
+    handler: src/functions/trueLayer.authCallback
     events:
       - http:
           path: /api/authCallback
@@ -41,7 +41,7 @@ functions:
           path: /api/providers
           method: get
   getUserProviders:
-    handler: build/src/functions/provider.getUserProviders
+    handler: src/functions/provider.getUserProviders
     events:
       - http:
           path: /api/user/{userId}/providers
