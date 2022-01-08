@@ -22,9 +22,9 @@ export default async (fn) => {
 
     return {
       statusCode,
-      body: {
+      body: JSON.stringify({
         message: err.message,
-      },
+      }),
     };
   }
 };

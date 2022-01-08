@@ -42,21 +42,19 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
     const { Token, Provider } = sequelize.models;
 
     const { connector_id: providerId } = jwt.decode(data.access_token);
-
-    console.log('PROVIDER ID FOUND:', providerId);
-
     const provider = await Provider.findOne({ where: { providerId } });
 
-    console.log('PROVIDER FOUND:', provider);
-
-    await Token.create({
+    const token = Token.build({
       accessToken: data.access_token,
       refreshToken: data.refresh_token,
       expiry: data.expiry_time,
       scope: data.scope,
-      userId: 1,
-      providerId: provider.id,
     });
+
+    await token.save();
+    await token.setProvider(provider.id);
+    await token.setUser(1);
+    await token.save();
 
     return {
       statusCode: response.status,

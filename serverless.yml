@@ -28,7 +28,7 @@ custom:
     httpPort: 3001
 
 functions:
-  starlingAuth:
+  trueLayerCallback:
     handler: src/functions/trueLayer.authCallback
     events:
       - http:
@@ -39,4 +39,10 @@ functions:
     events:
       - http:
           path: /api/providers
+          method: get
+  getUserProviders:
+    handler: src/functions/provider.getUserProviders
+    events:
+      - http:
+          path: /api/user/{userId}/providers
           method: get

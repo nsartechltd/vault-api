@@ -290,3 +290,24 @@ describe('GET /providers', () => {
       ],
     }));
 });
+
+describe('GET /user/{userId}/providers', () => {
+  const userId = 1;
+
+  it('should retrieve a list of the users providers from the database', () =>
+    server.get(`/user/${userId}/providers`).expect(200, {
+      providers: [
+        {
+          id: 1,
+          Provider: {
+            id: 5,
+            name: 'Starling',
+            providerId: 'oauth-starling',
+            country: 'uk',
+            logoUrl:
+              'https://truelayer-provider-assets.s3.amazonaws.com/global/logos/starling.svg',
+          },
+        },
+      ],
+    }));
+});

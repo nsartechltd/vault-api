@@ -4,7 +4,7 @@
   "description": "API for Vault application",
   "scripts": {
     "start": "sls offline",
-    "test": "jest",
+    "test": "jest --ci",
     "build": "npx tsc",
     "lint": "npx eslint --max-warnings=0 ./src",
     "pretty:write": "npx prettier --write './{src,db}/**/*.ts'",
