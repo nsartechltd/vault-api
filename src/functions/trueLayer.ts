@@ -1,6 +1,9 @@
-import type { APIGatewayEvent } from 'aws-lambda';
+import type { APIGatewayEvent, Callback } from 'aws-lambda';
 
 import { authenticateProvider } from '../services/trueLayer';
 
-export const authCallback = async (event: APIGatewayEvent) =>
-  authenticateProvider(event);
+export const authCallback = async (
+  event: APIGatewayEvent,
+  _,
+  callback: Callback
+) => authenticateProvider(event, callback);

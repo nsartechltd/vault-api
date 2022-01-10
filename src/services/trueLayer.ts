@@ -1,16 +1,19 @@
 import fetch from 'node-fetch';
 import jwt from 'jsonwebtoken';
 import type { Response } from 'node-fetch';
-import type { APIGatewayEvent } from 'aws-lambda';
+import type { APIGatewayEvent, Callback } from 'aws-lambda';
 
 import config from '../config';
 import base from './base';
 
-export const authenticateProvider = async (event: APIGatewayEvent) =>
+export const authenticateProvider = async (
+  event: APIGatewayEvent,
+  callback: Callback
+) =>
   base(async (sequelize) => {
     const { code } = event.queryStringParameters;
 
-    console.log('OAuth code received from UI: ', code);
+    console.log('OAuth code received from True Layer: ', code);
 
     const {
       trueLayer: { apiUrl, clientId, clientSecret, redirectUrl },
@@ -44,6 +47,10 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
     const { connector_id: providerId } = jwt.decode(data.access_token);
     const provider = await Provider.findOne({ where: { providerId } });
 
+    if (!provider) {
+      throw new Error(`Provider with ID: '${providerId}' not found.`);
+    }
+
     const token = Token.build({
       accessToken: data.access_token,
       refreshToken: data.refresh_token,
@@ -56,7 +63,10 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
     await token.setUser(1);
     await token.save();
 
-    return {
-      statusCode: response.status,
-    };
+    return callback(null, {
+      statusCode: 302,
+      headers: {
+        Location: 'http://localhost:3000/accounts',
+      },
+    });
   });

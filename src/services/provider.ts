@@ -30,6 +30,7 @@ const SUPPORTED_PROVIDERS = [
   'ob-bos',
   'ob-nationwide',
   'ob-revolut',
+  'mock',
 ];
 
 /**

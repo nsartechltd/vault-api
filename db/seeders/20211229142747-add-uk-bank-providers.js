@@ -163,6 +163,15 @@ module.exports = {
             created_at,
             updated_at,
           },
+          {
+            name: 'Mock',
+            provider_id: 'mock',
+            country,
+            logo_url:
+              'https://truelayer-provider-assets.s3.amazonaws.com/global/logos/mock.svg',
+            created_at,
+            updated_at,
+          },
         ],
         { transaction }
       );
