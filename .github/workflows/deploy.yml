@@ -4,6 +4,8 @@ on: [pull_request]
 
 jobs:
   deploy:
+    runs-on: ubuntu-latest
+
     env:
       TRUE_LAYER_REDIRECT_URL: ${{ secrets.TRUE_LAYER_REDIRECT_URL }}
       TRUE_LAYER_CLIENT_SECRET: ${{ secrets.TRUE_LAYER_CLIENT_SECRET }}
