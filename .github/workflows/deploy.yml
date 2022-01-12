@@ -31,4 +31,4 @@ jobs:
           export AWS_REGION=eu-west-2
 
       - name: Deploy
-        run: SLS_DEBUG=* npx serverless deploy
+        run: SLS_DEBUG=* npx serverless deploy --stage dev

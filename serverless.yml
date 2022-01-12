@@ -11,21 +11,24 @@ provider:
   stage: ${opt:stage, 'dev'}
   lambdaHashingVersion: 20201221
   environment:
-    TRUE_LAYER_API_URL: ${env:TRUE_LAYER_API_URL}
-    TRUE_LAYER_CLIENT_ID: ${env:TRUE_LAYER_CLIENT_ID}
-    TRUE_LAYER_CLIENT_SECRET: ${env:TRUE_LAYER_CLIENT_SECRET}
-    TRUE_LAYER_REDIRECT_URL: ${env:TRUE_LAYER_REDIRECT_URL}
     ENVIRONMENT: ${self:provider.stage}
-    NODE_ENV: ${env:NODE_ENV}
-    DB_HOST: ${env:DB_HOST}
-    DB_USERNAME: ${env:DB_USERNAME}
-    DB_PASSWORD: ${env:DB_PASSWORD}
-    DB_DATABASE: ${env:DB_DATABASE}
+    NODE_ENV: ${self:custom.nodeEnv.${self:provider.stage}}
+    TRUE_LAYER_API_URL: ${ssm:/vault/TRUE_LAYER_API_URL}
+    TRUE_LAYER_CLIENT_ID: ${ssm:/vault/TRUE_LAYER_CLIENT_ID~true}
+    TRUE_LAYER_CLIENT_SECRET: ${ssm:/vault/TRUE_LAYER_CLIENT_SECRET~true}
+    TRUE_LAYER_REDIRECT_URL: ${ssm:/vault/TRUE_LAYER_REDIRECT_URL}
+    DB_HOST: ${ssm:/vault/rds/DB_HOST}
+    DB_USERNAME: ${ssm:/vault/rds/DB_USERNAME}
+    DB_PASSWORD: ${ssm:/vault/rds/DB_PASSWORD~true}
+    DB_DATABASE: ${ssm:/vault/rds/DB_DATABASE}
 
 custom:
   serverless-offline:
     host: 0.0.0.0
     httpPort: 3001
+  nodeEnv:
+    dev: development
+    prod: production
 
 functions:
   trueLayerCallback:
