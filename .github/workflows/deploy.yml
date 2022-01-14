@@ -20,7 +20,7 @@ jobs:
         run: npm ci
 
       - name: Debug Step
-        run: aws --version
+        run: jq --version
 
       - name: Assume Role & Deploy
         run: |
