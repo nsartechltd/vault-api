@@ -1,9 +1,10 @@
-name: Vault API Deployment
+name: Vault API Dev Deployment
 
-on:
-  push:
-    branches:
-      - master
+on: [pull_request]
+# on:
+#   push:
+#     branches:
+#       - master
 
 jobs:
   deploy:
@@ -31,6 +32,11 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           role-duration-seconds: 1200
           role-session-name: ci
+
+      - name: Run Migrations
+        uses: aws-actions/aws-codebuild-run-build@v1
+        with:
+          project-name: dev-vault-migrate
 
       - name: Deploy
         run: SLS_DEBUG=* npx serverless deploy --stage dev
