@@ -11,6 +11,8 @@ export default async (fn) => {
     const { statusCode = 200, body = null } = await fn(sequelize);
     console.log('[Base] Function executed!');
 
+    console.log({ statusCode }, JSON.stringify(body));
+
     return {
       statusCode,
       body: JSON.stringify(body),

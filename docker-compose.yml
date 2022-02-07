@@ -39,9 +39,9 @@ services:
     volumes:
       - ./:/home/node/app:cached
     command: sh -c '
-      npx sequelize-cli db:migrate:undo:all &&
+      npm run db:migrate:undo &&
       npm run db:migrate &&
-      npx sequelize-cli db:seed:undo:all &&
+      npm run db:seed:undo &&
       npm run db:seed &&
       npx sls config credentials --overwrite --provider aws --key KEY --secret SECRET &&
       npm start'
