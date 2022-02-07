@@ -1,6 +1,6 @@
 import { Sequelize, DataTypes } from 'sequelize';
 
-const env = process.env.ENVIRONMENT || 'dev';
+const env = process.env.NODE_ENV;
 import config from '../config';
 import Provider from './Provider';
 import Token from './Token';

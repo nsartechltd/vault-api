@@ -9,8 +9,10 @@
     "lint": "npx eslint --max-warnings=0 ./src",
     "pretty:write": "npx prettier --write './{src,db}/**/*.ts'",
     "pretty:check": "npx prettier --check './{src,db}/**/*.ts'",
-    "db:seed": "npx sequelize-cli db:seed:all --debug",
-    "db:migrate": "npx sequelize-cli db:migrate --debug"
+    "db:migrate": "sequelize-cli db:migrate",
+    "db:migrate:undo": "sequelize-cli db:migrate:undo:all",
+    "db:seed": "sequelize-cli db:seed:all",
+    "db:seed:undo": "sequelize-cli db:seed:undo:all"
   },
   "repository": {
     "type": "git",
@@ -44,7 +46,7 @@
   "dependencies": {
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^2.3.2",
-    "node-fetch": "^2.6.5",
+    "node-fetch": "^2.6.7",
     "sequelize": "^6.7.0"
   },
   "jest": {

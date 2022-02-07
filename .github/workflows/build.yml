@@ -38,7 +38,7 @@ jobs:
         run: docker compose up -d
 
       - name: Wait For Stack
-        run: sleep 30
+        run: sleep 60
 
       - name: Run Tests
         run: npm test -- --runInBand
