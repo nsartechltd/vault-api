@@ -1,10 +1,9 @@
 name: Vault API Dev Deployment
 
-on: [pull_request]
-# on:
-#   push:
-#     branches:
-#       - master
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   deploy:

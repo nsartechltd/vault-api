@@ -23,8 +23,8 @@ provider:
     DB_DATABASE: ${ssm:/vault/rds/DB_DATABASE}
   vpc:
     securityGroupIds:
-      - ${ssm:/backend/SECURITY_GROUP_ID}
-    subnetIds: ${ssm:/backend/PRIVATE_SUBNET_IDS~split}
+      - ${ssm:/vault/SECURITY_GROUP_ID}
+    subnetIds: ${ssm:/vault/PRIVATE_SUBNET_IDS~split}
 
 custom:
   serverless-offline:
