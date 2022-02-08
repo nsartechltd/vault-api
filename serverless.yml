@@ -31,18 +31,19 @@ custom:
   serverless-offline:
     host: 0.0.0.0
     httpPort: 3001
-  domain: vault.api${self:custom.stageDomainPrefix.${self:provider.stage}}.nsar-tech.co.uk
+  domain: vault-api${self:custom.stageDomainPrefix.${self:provider.stage}}.nsar-tech.co.uk
   nodeEnv:
     dev: development
     prod: production
   stageDomainPrefix:
-    dev: ".dev"
+    dev: "-dev"
     prod: ""
   customDomain:
     rest:
       domainName: ${self:custom.domain}
       createRoute53Record: false # managed by terraform in the root account
       endpointType: "regional"
+      certificateArn: ${ssm:/nsar-tech/CERTIFICATE_ARN}
       autoDomain: true
       autoDomainWaitFor: 120
 
