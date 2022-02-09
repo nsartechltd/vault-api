@@ -36,6 +36,7 @@ services:
       TRUE_LAYER_CLIENT_ID: ${TRUE_LAYER_CLIENT_ID}
       TRUE_LAYER_CLIENT_SECRET: ${TRUE_LAYER_CLIENT_SECRET}
       TRUE_LAYER_REDIRECT_URL: ${TRUE_LAYER_REDIRECT_URL}
+      VAULT_UI_URL: http://localhost:3000
     volumes:
       - ./:/home/node/app:cached
     command: sh -c '

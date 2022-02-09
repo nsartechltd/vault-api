@@ -22,6 +22,7 @@ provider:
     DB_USERNAME: ${ssm:/vault/rds/DB_USERNAME}
     DB_PASSWORD: ${ssm:/vault/rds/DB_PASSWORD~true}
     DB_DATABASE: ${ssm:/vault/rds/DB_DATABASE}
+    VAULT_UI_URL: ${ssm:/vault/ui/url}
   vpc:
     securityGroupIds:
       - ${ssm:/vault/SECURITY_GROUP_ID}

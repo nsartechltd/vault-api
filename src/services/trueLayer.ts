@@ -17,6 +17,7 @@ export const authenticateProvider = async (
 
     const {
       trueLayer: { apiUrl, clientId, clientSecret, redirectUrl },
+      vault: { url: vaultUrl },
     } = config;
 
     const params = new URLSearchParams();
@@ -66,7 +67,7 @@ export const authenticateProvider = async (
     return callback(null, {
       statusCode: 302,
       headers: {
-        Location: 'http://localhost:3000/accounts',
+        Location: `${vaultUrl}/accounts`,
       },
     });
   });
