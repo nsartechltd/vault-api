@@ -16,8 +16,8 @@ export default (sequelize: Sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Token.belongsTo(models.Provider, { foreignKey: 'providerId' });
-      Token.belongsTo(models.User, { foreignKey: 'userId' });
+      Token.belongsTo(models.Provider);
+      Token.belongsTo(models.User);
     }
   }
 
