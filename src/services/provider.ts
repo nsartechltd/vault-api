@@ -12,6 +12,13 @@ type Provider = {
   scopes: string[];
 };
 
+const headers = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Credentials': true,
+  'Access-Control-Allow-Headers': '*',
+  'Content-Type': 'application/json',
+};
+
 const SUPPORTED_PROVIDERS = [
   'ob-natwest',
   'ob-hsbc',
@@ -55,6 +62,8 @@ export const retrieveProviders = () =>
     const body: Provider[] = await response.json();
 
     return {
+      statusCode: 200,
+      headers,
       body: {
         providers: body.filter(filterProviders),
       },
@@ -79,6 +88,8 @@ export const retrieveUserProviders = (event: APIGatewayEvent) =>
     });
 
     return {
+      statusCode: 200,
+      headers,
       body: {
         providers,
       },
