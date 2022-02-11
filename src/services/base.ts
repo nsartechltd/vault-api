@@ -2,6 +2,13 @@ import db from '../../db/models';
 
 const { sequelize } = db;
 
+const headers = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Credentials': true,
+  'Access-Control-Allow-Headers': '*',
+  'Content-Type': 'application/json',
+};
+
 export default async (fn) => {
   console.log('[Base] Executing...');
 
