@@ -15,10 +15,16 @@ export default async (fn) => {
   try {
     await sequelize.authenticate();
 
-    const response = await fn(sequelize);
+    const { statusCode = 200, body = null } = await fn(sequelize);
     console.log('[Base] Function executed!');
 
-    return response;
+    console.log({ statusCode }, JSON.stringify(body));
+
+    return {
+      statusCode,
+      headers,
+      body: JSON.stringify(body),
+    };
   } catch (err) {
     console.error('[Base] Error in process: ', err);
 
