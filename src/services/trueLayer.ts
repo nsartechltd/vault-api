@@ -10,6 +10,7 @@ const { sequelize } = db;
 
 export const authenticateProvider = async (
   event: APIGatewayEvent,
+  _,
   callback: Callback
 ) => {
   const { code } = event.queryStringParameters;
