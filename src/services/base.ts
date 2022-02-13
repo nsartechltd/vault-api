@@ -2,7 +2,7 @@ import db from '../../db/models';
 
 const { sequelize } = db;
 
-const headers = {
+const commonHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Credentials': true,
   'Access-Control-Allow-Headers': '*',
@@ -15,14 +15,17 @@ export default async (fn) => {
   try {
     await sequelize.authenticate();
 
-    const { statusCode = 200, body = null } = await fn(sequelize);
+    const { statusCode = 200, body = null, headers = {} } = await fn(sequelize);
     console.log('[Base] Function executed!');
 
     console.log({ statusCode }, JSON.stringify(body));
 
     return {
       statusCode,
-      headers,
+      headers: {
+        ...commonHeaders,
+        ...headers,
+      },
       body: JSON.stringify(body),
     };
   } catch (err) {
@@ -32,7 +35,7 @@ export default async (fn) => {
 
     return {
       statusCode,
-      headers,
+      headers: commonHeaders,
       body: JSON.stringify({
         message: err.message,
       }),
