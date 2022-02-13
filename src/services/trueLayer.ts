@@ -5,6 +5,7 @@ import type { APIGatewayEvent } from 'aws-lambda';
 
 import base from './base';
 import config from '../config';
+import { AuthError, NotFoundError } from '../lib/errors';
 
 export const authenticateProvider = async (event: APIGatewayEvent) =>
   base(async (sequelize) => {
@@ -35,9 +36,7 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
     console.log('Data received from request: ', data);
 
     if (!data.access_token) {
-      return {
-        statusCode: 401,
-      };
+      throw new AuthError('Unauthorised');
     }
 
     const { Token, Provider } = sequelize.models;
@@ -48,17 +47,39 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
     });
 
     if (!provider) {
-      throw new Error(`Provider with ID: '${providerId}' not found.`);
+      throw new NotFoundError(`Provider with ID: '${providerId}' not found.`);
     }
 
-    await Token.create({
-      accessToken: data.access_token,
-      refreshToken: data.refresh_token,
-      expiry: data.expiry_time,
-      scope: data.scope,
-      userId: 1,
-      providerId: provider.id,
+    const token = await Token.findOne({
+      where: {
+        userId: 1,
+        providerId: provider.id,
+      },
     });
+
+    if (token) {
+      console.log(
+        'Token already found for user and provider. Replacing token.'
+      );
+
+      await token.update({
+        accessToken: data.access_token,
+        refreshToken: data.refresh_token,
+        expiry: data.expiry_time,
+        scope: data.scope,
+      });
+    } else {
+      console.log('User authenticating token for the first time.');
+
+      await Token.create({
+        accessToken: data.access_token,
+        refreshToken: data.refresh_token,
+        expiry: data.expiry_time,
+        scope: data.scope,
+        userId: 1,
+        providerId: provider.id,
+      });
+    }
 
     return {
       statusCode: 302,

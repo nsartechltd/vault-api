@@ -69,7 +69,7 @@ export const retrieveUserProviders = (event: APIGatewayEvent) =>
 
     const { Provider, Token } = sequelize.models;
 
-    const providers = await Token.findAll({
+    const tokens = await Token.findAll({
       where: { userId },
       attributes: ['id'],
       include: {
@@ -80,7 +80,7 @@ export const retrieveUserProviders = (event: APIGatewayEvent) =>
 
     return {
       body: {
-        providers,
+        providers: tokens,
       },
     };
   });
