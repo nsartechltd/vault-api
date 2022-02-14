@@ -67,3 +67,12 @@ functions:
       - http:
           path: /api/user/{userId}/providers
           method: get
+
+  # Cognito
+  storeCognitoUserData:
+    handler: src/functions/cognito.storeUserData
+    events:
+      - cognitoUserPool:
+          pool: vault-${self:provider.stage}-user-pool
+          trigger: PostConfirmation
+          existing: true
