@@ -70,7 +70,7 @@ functions:
 
   # Cognito
   storeCognitoUserData:
-    handler: src/functions/cognito.storeUserData
+    handler: src/functions/cognito.storeUser
     events:
       - cognitoUserPool:
           pool: vault-${self:provider.stage}-user-pool
