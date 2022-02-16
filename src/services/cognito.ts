@@ -1,11 +1,16 @@
-import type { APIGatewayEvent } from 'aws-lambda';
-
 import base from './base';
-// import config from '../config';
 
-export const storeUserData = (event: APIGatewayEvent) =>
-  base(async () => {
-    console.log('EVENT RECEIVED', JSON.stringify(event));
+export const storeUserData = (event) =>
+  base(async (sequelize) => {
+    const { sub, email, name } = event.request.userAttributes;
+
+    const { User } = sequelize.models;
+
+    await User.create({
+      cognito_id: sub,
+      email,
+      name,
+    });
 
     return {
       statusCode: 204,
