@@ -67,10 +67,16 @@ export const retrieveUserProviders = (event: APIGatewayEvent) =>
       pathParameters: { userId },
     } = event;
 
-    const { Provider, Token } = sequelize.models;
+    const { Provider, User, Token } = sequelize.models;
+
+    const user = await User.findOne({
+      where: {
+        cognito_id: userId,
+      },
+    });
 
     const tokens = await Token.findAll({
-      where: { userId },
+      where: { userId: user.id },
       attributes: ['id'],
       include: {
         model: Provider,
