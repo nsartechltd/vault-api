@@ -4,6 +4,7 @@ type UserType = {
   id?: number;
   name: string;
   email: string;
+  cognitoId: string;
 };
 
 export default (sequelize: Sequelize, DataTypes) => {
@@ -22,6 +23,7 @@ export default (sequelize: Sequelize, DataTypes) => {
     {
       name: DataTypes.STRING,
       email: DataTypes.STRING,
+      cognitoId: DataTypes.STRING,
     },
     {
       sequelize,

@@ -7,12 +7,10 @@ export const storeUserData = (event) =>
     const { User } = sequelize.models;
 
     await User.create({
-      cognito_id: sub,
+      cognitoId: sub,
       email,
       name,
     });
 
-    return {
-      statusCode: 204,
-    };
+    return event;
   });
