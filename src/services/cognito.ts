@@ -1,16 +1,15 @@
-import base from './base';
+import database from '../../db/models';
 
-export const storeUserData = (event) =>
-  base(async (sequelize) => {
-    const { sub, email, name } = event.request.userAttributes;
+export const storeUserData = async (event) => {
+  const { sub, email, name } = event.request.userAttributes;
 
-    const { User } = sequelize.models;
+  const { User } = database.sequelize.models;
 
-    await User.create({
-      cognitoId: sub,
-      email,
-      name,
-    });
-
-    return event;
+  await User.create({
+    cognitoId: sub,
+    email,
+    name,
   });
+
+  return event;
+};
