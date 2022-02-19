@@ -2,7 +2,7 @@ import db from '../../db/models';
 
 const { sequelize } = db;
 
-const commonHeaders = {
+const headers = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Credentials': true,
   'Access-Control-Allow-Headers': '*',
@@ -22,10 +22,7 @@ export default async (fn) => {
 
     return {
       statusCode,
-      headers: {
-        ...commonHeaders,
-        ...headers,
-      },
+      headers,
       body: JSON.stringify(body),
     };
   } catch (err) {
@@ -35,7 +32,7 @@ export default async (fn) => {
 
     return {
       statusCode,
-      headers: commonHeaders,
+      headers,
       body: JSON.stringify({
         message: err.message,
       }),

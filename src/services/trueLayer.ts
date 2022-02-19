@@ -15,7 +15,6 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
 
     const {
       trueLayer: { apiUrl, clientId, clientSecret, redirectUrl },
-      vault: { url: vaultUrl },
     } = config;
 
     const params = new URLSearchParams();
@@ -82,9 +81,6 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
     }
 
     return {
-      statusCode: 302,
-      headers: {
-        Location: `${vaultUrl}/accounts`,
-      },
+      statusCode: 204,
     };
   });
