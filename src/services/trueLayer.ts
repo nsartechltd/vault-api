@@ -9,7 +9,7 @@ import { AuthError, NotFoundError } from '../lib/errors';
 
 export const authenticateProvider = async (event: APIGatewayEvent) =>
   base(async (sequelize) => {
-    const { code } = event.queryStringParameters;
+    const { code, userId } = event.queryStringParameters;
 
     console.log('OAuth code received from True Layer: ', code);
 
@@ -52,7 +52,7 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
 
     const token = await Token.findOne({
       where: {
-        userId: 1,
+        userId,
         providerId: provider.id,
       },
     });
@@ -76,7 +76,7 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
         refreshToken: data.refresh_token,
         expiry: data.expiry_time,
         scope: data.scope,
-        userId: 1,
+        userId,
         providerId: provider.id,
       });
     }
