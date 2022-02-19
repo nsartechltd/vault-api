@@ -7,8 +7,9 @@ module.exports = {
         'user',
         [
           {
-            name: 'Test User',
-            email: 'test.user@email.com',
+            name: 'Nour',
+            email: 'n6rayan@gmail.com',
+            cognito_id: 'f7c4fd2d-b5e3-44e1-9963-432fd54675dd',
             created_at: new Date(),
             updated_at: new Date(),
           },

@@ -26,7 +26,7 @@ describe('GET /providers', () => {
 });
 
 describe('GET /user/{userId}/providers', () => {
-  const userId = 1;
+  const userId = 'f7c4fd2d-b5e3-44e1-9963-432fd54675dd';
 
   it('should retrieve a list of the users providers from the database', () =>
     server.get(`/user/${userId}/providers`).expect(200, {

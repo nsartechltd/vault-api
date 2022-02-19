@@ -2,7 +2,7 @@ const created_at = new Date();
 const updated_at = new Date();
 
 const providerId = 'oauth-starling';
-const email = 'test.user@email.com';
+const email = 'n6rayan@gmail.com';
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
