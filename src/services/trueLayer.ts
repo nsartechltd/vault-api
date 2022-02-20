@@ -38,7 +38,7 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
       throw new AuthError('Unauthorised');
     }
 
-    const { Token, Provider } = sequelize.models;
+    const { Provider, Token, User } = sequelize.models;
 
     const { connector_id: providerId } = jwt.decode(data.access_token);
     const provider = await Provider.findOne({
@@ -49,9 +49,23 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
       throw new NotFoundError(`Provider with ID: '${providerId}' not found.`);
     }
 
+    console.log('Provider found:', JSON.stringify(provider));
+
+    const user = await User.findOne({
+      where: {
+        cognitoId: userId,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundError(`User with Cognito ID: '${userId}' not found.`);
+    }
+
+    console.log('User found: ', JSON.stringify(user));
+
     const token = await Token.findOne({
       where: {
-        userId,
+        userId: user.id,
         providerId: provider.id,
       },
     });
@@ -75,7 +89,7 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
         refreshToken: data.refresh_token,
         expiry: data.expiry_time,
         scope: data.scope,
-        userId,
+        userId: user.id,
         providerId: provider.id,
       });
     }

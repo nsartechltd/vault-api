@@ -54,6 +54,8 @@ export const retrieveProviders = () =>
     );
     const body: Provider[] = await response.json();
 
+    console.log('Providers retrieved from TrueLayer: ', JSON.stringify(body));
+
     return {
       body: {
         providers: body.filter(filterProviders),
@@ -83,6 +85,8 @@ export const retrieveUserProviders = (event: APIGatewayEvent) =>
         attributes: ['id', 'name', 'providerId', 'country', 'logoUrl'],
       },
     });
+
+    console.log('User tokens found: ', JSON.stringify(tokens));
 
     return {
       body: {
