@@ -15,7 +15,7 @@ export default async (fn) => {
   try {
     await sequelize.authenticate();
 
-    const { statusCode = 200, body = null, headers = {} } = await fn(sequelize);
+    const { statusCode = 200, body = null } = await fn(sequelize);
     console.log('[Base] Function executed!');
 
     console.log({ statusCode }, JSON.stringify(body));
