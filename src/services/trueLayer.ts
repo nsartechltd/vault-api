@@ -14,7 +14,7 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
     console.log('OAuth code received from True Layer: ', code);
 
     const {
-      trueLayer: { apiUrl, clientId, clientSecret, redirectUrl },
+      trueLayer: { authUrl, clientId, clientSecret, redirectUrl },
     } = config;
 
     const params = new URLSearchParams();
@@ -26,7 +26,7 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
 
     console.log('URL encoded params for TrueLayer: ', params);
 
-    const response: Response = await fetch(`${apiUrl}/connect/token`, {
+    const response: Response = await fetch(`${authUrl}/connect/token`, {
       method: 'POST',
       body: params,
     });
