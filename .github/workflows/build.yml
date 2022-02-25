@@ -11,6 +11,7 @@ jobs:
       TRUE_LAYER_CLIENT_SECRET: ${{ secrets.TRUE_LAYER_CLIENT_SECRET }}
       TRUE_LAYER_CLIENT_ID: ${{ secrets.TRUE_LAYER_CLIENT_ID }}
       TRUE_LAYER_API_URL: ${{ secrets.TRUE_LAYER_API_URL }}
+      TRUE_LAYER_AUTH_URL: ${{ secrets.TRUE_LAYER_AUTH_URL }}
 
     steps:
       - name: Checkout Repository

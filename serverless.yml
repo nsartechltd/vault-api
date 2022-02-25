@@ -15,6 +15,7 @@ provider:
     ENVIRONMENT: ${self:provider.stage}
     NODE_ENV: ${self:custom.nodeEnv.${self:provider.stage}}
     TRUE_LAYER_API_URL: ${ssm:/vault/TRUE_LAYER_API_URL}
+    TRUE_LAYER_AUTH_URL: ${ssm:/vault/TRUE_LAYER_AUTH_URL}
     TRUE_LAYER_CLIENT_ID: ${ssm:/vault/TRUE_LAYER_CLIENT_ID~true}
     TRUE_LAYER_CLIENT_SECRET: ${ssm:/vault/TRUE_LAYER_CLIENT_SECRET~true}
     TRUE_LAYER_REDIRECT_URL: ${ssm:/vault/TRUE_LAYER_REDIRECT_URL}
@@ -66,6 +67,24 @@ functions:
     events:
       - http:
           path: /api/user/{userId}/providers
+          method: get
+  getUserProviderAccounts:
+    handler: src/functions/provider.getUserProviderAccounts
+    events:
+      - http:
+          path: /api/user/{userId}/provider/{providerId}/accounts
+          method: get
+  getUserProviderAccountBalance:
+    handler: src/functions/provider.getUserProviderAccountBalance
+    events:
+      - http:
+          path: /api/user/{userId}/provider/{providerId}/account/{accountId}/balance
+          method: get
+  getUserProviderAccountTransactions:
+    handler: src/functions/provider.getUserProviderAccountTransactions
+    events:
+      - http:
+          path: /api/user/{userId}/provider/{providerId}/account/{accountId}/transactions
           method: get
 
   # Cognito
