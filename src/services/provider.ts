@@ -1,17 +1,8 @@
-import fetch from 'node-fetch';
 import type { APIGatewayEvent } from 'aws-lambda';
 
 import base from './base';
-import config from '../config';
+import * as trueLayerClient from '../lib/trueLayer';
 import { NotFoundError } from '../lib/errors';
-
-type Provider = {
-  provider_id: string;
-  display_name: string;
-  country: string;
-  logo_url: string;
-  scopes: string[];
-};
 
 const SUPPORTED_PROVIDERS = [
   'ob-natwest',
@@ -46,14 +37,7 @@ const filterProviders = (provider) =>
 
 export const retrieveProviders = () =>
   base(async () => {
-    const {
-      trueLayer: { authUrl, clientId },
-    } = config;
-
-    const response = await fetch(
-      `${authUrl}/api/providers?clientId=${clientId}`
-    );
-    const body: Provider[] = await response.json();
+    const body = await trueLayerClient.getProviders();
 
     console.log('Providers retrieved from TrueLayer: ', JSON.stringify(body));
 
@@ -116,32 +100,20 @@ export const retrieveUserProviderAccounts = (event: APIGatewayEvent) =>
 
     console.log('User found: ', JSON.stringify(user));
 
-    const token = await Token.findOne({
+    const tokens = await Token.findOne({
       where: { userId: user.id, providerId },
-      attributes: ['accessToken'],
+      attributes: ['accessToken', 'refreshToken'],
     });
 
-    if (!token) {
+    if (!tokens) {
       throw new NotFoundError(
         `Token with ID: '${providerId}' and User ID: '${user.id}' not found.`
       );
     }
 
-    console.log('User token found: ', JSON.stringify(token));
+    console.log('User tokens found: ', JSON.stringify(tokens));
 
-    const {
-      trueLayer: { apiUrl },
-    } = config;
-
-    const response = await fetch(`${apiUrl}/data/v1/accounts`, {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token.accessToken}`,
-      },
-    });
-
-    const body = await response.json();
+    const body = await trueLayerClient.getAccounts(tokens);
 
     console.log('Accounts retrieved from TrueLayer: ', JSON.stringify(body));
 
@@ -172,35 +144,20 @@ export const retrieveUserProviderAccountBalance = (event: APIGatewayEvent) =>
 
     console.log('User found: ', JSON.stringify(user));
 
-    const token = await Token.findOne({
+    const tokens = await Token.findOne({
       where: { userId: user.id, providerId },
-      attributes: ['accessToken'],
+      attributes: ['accessToken', 'refreshToken'],
     });
 
-    if (!token) {
+    if (!tokens) {
       throw new NotFoundError(
         `Token with ID: '${providerId}' and User ID: '${user.id}' not found.`
       );
     }
 
-    console.log('User token found: ', JSON.stringify(token));
+    console.log('User tokens found: ', JSON.stringify(tokens));
 
-    const {
-      trueLayer: { apiUrl },
-    } = config;
-
-    const response = await fetch(
-      `${apiUrl}/data/v1/accounts/${accountId}/balance`,
-      {
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token.accessToken}`,
-        },
-      }
-    );
-
-    const body = await response.json();
+    const body = await trueLayerClient.getAccountBalance(tokens, accountId);
 
     console.log(
       'Account balance retrieved from TrueLayer: ',
@@ -241,35 +198,23 @@ export const retrieveUserProviderAccountTransactions = (
 
     console.log('User found: ', JSON.stringify(user));
 
-    const token = await Token.findOne({
+    const tokens = await Token.findOne({
       where: { userId: user.id, providerId },
-      attributes: ['accessToken'],
+      attributes: ['accessToken', 'refreshToken'],
     });
 
-    if (!token) {
+    if (!tokens) {
       throw new NotFoundError(
         `Token with ID: '${providerId}' and User ID: '${user.id}' not found.`
       );
     }
 
-    console.log('User token found: ', JSON.stringify(token));
+    console.log('User tokens found: ', JSON.stringify(tokens));
 
-    const {
-      trueLayer: { apiUrl },
-    } = config;
-
-    const response = await fetch(
-      `${apiUrl}/data/v1/accounts/${accountId}/transactions`,
-      {
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token.accessToken}`,
-        },
-      }
+    const body = await trueLayerClient.getAccountTransactions(
+      tokens,
+      accountId
     );
-
-    const body = await response.json();
 
     console.log(
       'Account balance retrieved from TrueLayer: ',
