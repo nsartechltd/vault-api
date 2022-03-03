@@ -1,10 +1,8 @@
-import fetch from 'node-fetch';
 import jwt from 'jsonwebtoken';
-import type { Response } from 'node-fetch';
 import type { APIGatewayEvent } from 'aws-lambda';
 
 import base from './base';
-import config from '../config';
+import * as trueLayerClient from '../lib/trueLayer';
 import { AuthError, NotFoundError } from '../lib/errors';
 
 export const authenticateProvider = async (event: APIGatewayEvent) =>
@@ -13,34 +11,17 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
 
     console.log('OAuth code received from True Layer: ', code);
 
-    const {
-      trueLayer: { authUrl, clientId, clientSecret, redirectUrl },
-    } = config;
+    const body = await trueLayerClient.getAccessToken(code);
 
-    const params = new URLSearchParams();
-    params.append('grant_type', 'authorization_code');
-    params.append('client_id', clientId);
-    params.append('client_secret', clientSecret);
-    params.append('redirect_uri', redirectUrl);
-    params.append('code', code);
+    console.log('Data received from request: ', body);
 
-    console.log('URL encoded params for TrueLayer: ', params);
-
-    const response: Response = await fetch(`${authUrl}/connect/token`, {
-      method: 'POST',
-      body: params,
-    });
-    const data = await response.json();
-
-    console.log('Data received from request: ', data);
-
-    if (!data.access_token) {
+    if (!body.access_token) {
       throw new AuthError('Unauthorised');
     }
 
     const { Provider, Token, User } = sequelize.models;
 
-    const { connector_id: providerId } = jwt.decode(data.access_token);
+    const { connector_id: providerId } = jwt.decode(body.access_token);
     const provider = await Provider.findOne({
       where: { providerId },
     });
@@ -70,25 +51,24 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
       },
     });
 
+    const data = {
+      accessToken: body.access_token,
+      refreshToken: body.refresh_token,
+      expiry: body.expiry_time,
+      scope: body.scope,
+    };
+
     if (token) {
       console.log(
         'Token already found for user and provider. Replacing token.'
       );
 
-      await token.update({
-        accessToken: data.access_token,
-        refreshToken: data.refresh_token,
-        expiry: data.expiry_time,
-        scope: data.scope,
-      });
+      await token.update(data);
     } else {
       console.log('User authenticating token for the first time.');
 
       await Token.create({
-        accessToken: data.access_token,
-        refreshToken: data.refresh_token,
-        expiry: data.expiry_time,
-        scope: data.scope,
+        ...data,
         userId: user.id,
         providerId: provider.id,
       });
