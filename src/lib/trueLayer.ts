@@ -10,7 +10,7 @@ const {
 type Request = {
   method: string;
   headers: object;
-  body?: any;
+  body?: unknown;
 };
 
 type Tokens = {
