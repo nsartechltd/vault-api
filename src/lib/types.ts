@@ -7,3 +7,15 @@ export type Provider = {
 };
 
 export type Providers = Provider[];
+
+type Tokens = {
+  refreshToken: string;
+  accessToken: string;
+};
+
+export type UserData = {
+  providerId: string;
+  userId: number;
+  tokens: Tokens;
+  accountId?: string;
+};

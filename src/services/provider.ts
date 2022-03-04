@@ -113,7 +113,11 @@ export const retrieveUserProviderAccounts = (event: APIGatewayEvent) =>
 
     console.log('User tokens found: ', JSON.stringify(tokens));
 
-    const body = await trueLayerClient.getAccounts(tokens);
+    const body = await trueLayerClient.getAccounts({
+      tokens,
+      userId: user.id,
+      providerId,
+    });
 
     console.log('Accounts retrieved from TrueLayer: ', JSON.stringify(body));
 
@@ -157,7 +161,12 @@ export const retrieveUserProviderAccountBalance = (event: APIGatewayEvent) =>
 
     console.log('User tokens found: ', JSON.stringify(tokens));
 
-    const body = await trueLayerClient.getAccountBalance(tokens, accountId);
+    const body = await trueLayerClient.getAccountBalance({
+      tokens,
+      accountId,
+      providerId,
+      userId: user.id,
+    });
 
     console.log(
       'Account balance retrieved from TrueLayer: ',
@@ -211,10 +220,12 @@ export const retrieveUserProviderAccountTransactions = (
 
     console.log('User tokens found: ', JSON.stringify(tokens));
 
-    const body = await trueLayerClient.getAccountTransactions(
+    const body = await trueLayerClient.getAccountTransactions({
       tokens,
-      accountId
-    );
+      providerId,
+      userId: user.id,
+      accountId,
+    });
 
     console.log(
       'Account balance retrieved from TrueLayer: ',

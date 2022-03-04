@@ -1,7 +1,9 @@
 import fetch from 'node-fetch';
 import jwt from 'jsonwebtoken';
 
+import { updateUserToken } from './db';
 import config from '../config';
+import type { UserData } from './types';
 
 const {
   trueLayer: { authUrl, apiUrl, clientId, clientSecret, redirectUrl },
@@ -11,11 +13,6 @@ type Request = {
   method: string;
   headers: object;
   body?: unknown;
-};
-
-type Tokens = {
-  refreshToken: string;
-  accessToken: string;
 };
 
 const request = async (
@@ -47,18 +44,21 @@ const authFetchRequest = (
 const apiFetchRequest = async (
   method: string,
   endpoint: string,
-  tokens: Tokens,
+  userData: UserData,
   body = null
 ) => {
-  let accessToken = tokens.accessToken;
+  let accessToken = userData.tokens.accessToken;
 
   const { exp: expiry } = jwt.decode(accessToken);
-
   const isTokenExpired = expiry * 1000 < Date.now();
 
   if (isTokenExpired) {
     console.log('Token is expired, refreshing.');
-    accessToken = await refreshAccessToken(tokens.refreshToken);
+
+    const response = await refreshAccessToken(userData.tokens.refreshToken);
+    await updateUserToken(userData.userId, userData.providerId, response);
+
+    accessToken = response.access_token;
   }
 
   const headers = {
@@ -94,13 +94,15 @@ export const refreshAccessToken = async (refreshToken: string) => {
 export const getProviders = async () =>
   authFetchRequest('GET', `api/providers?clientId=${clientId}`);
 
-export const getAccounts = async (tokens: Tokens) =>
-  apiFetchRequest('GET', 'accounts', tokens);
+export const getAccounts = async (userData: UserData) =>
+  apiFetchRequest('GET', 'accounts', userData);
 
-export const getAccountBalance = async (tokens: Tokens, accountId: string) =>
-  apiFetchRequest('GET', `accounts/${accountId}/balance`, tokens);
+export const getAccountBalance = async (userData: UserData) =>
+  apiFetchRequest('GET', `accounts/${userData.accountId}/balance`, userData);
 
-export const getAccountTransactions = async (
-  tokens: Tokens,
-  accountId: string
-) => apiFetchRequest('GET', `accounts/${accountId}/transactions`, tokens);
+export const getAccountTransactions = async (userData: UserData) =>
+  apiFetchRequest(
+    'GET',
+    `accounts/${userData.accountId}/transactions`,
+    userData
+  );
