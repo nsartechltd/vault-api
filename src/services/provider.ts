@@ -62,6 +62,10 @@ export const retrieveUserProviders = (event: APIGatewayEvent) =>
       },
     });
 
+    if (!user) {
+      throw new NotFoundError(`User with Cognito ID: '${userId}' not found.`);
+    }
+
     const tokens = await Token.findAll({
       where: { userId: user.id },
       attributes: ['id', 'createdAt'],
