@@ -1,38 +1,36 @@
 import { Model, Sequelize } from 'sequelize';
 
-type ProviderType = {
+type AssetType = {
   id?: number;
-  name: string;
-  providerId: string;
-  country: string;
-  logoUrl: string;
+  type: string;
+  accountId: string;
 };
 
 export default (sequelize: Sequelize, DataTypes) => {
-  class Provider extends Model<ProviderType> {
+  class Asset extends Model<AssetType> {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Provider.hasMany(models.Token);
+      Asset.belongsTo(models.Token);
+      Asset.hasMany(models.Transaction);
+      Asset.hasOne(models.Account);
     }
   }
 
-  Provider.init(
+  Asset.init(
     {
-      name: DataTypes.STRING,
-      providerId: DataTypes.STRING,
-      country: DataTypes.STRING,
-      logoUrl: DataTypes.STRING,
+      type: DataTypes.ENUM('account', 'card'),
+      accountId: DataTypes.STRING,
     },
     {
       sequelize,
-      tableName: 'provider',
+      tableName: 'asset',
       underscored: true,
     }
   );
 
-  return Provider;
+  return Asset;
 };

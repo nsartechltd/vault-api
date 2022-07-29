@@ -19,59 +19,134 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
       throw new AuthError('Unauthorised');
     }
 
-    const { Provider, Token, User } = sequelize.models;
+    const { Account, Asset, Token, Transaction, User } = sequelize.models;
 
     const { connector_id: providerId } = jwt.decode(body.access_token);
-    const provider = await Provider.findOne({
-      where: { providerId },
-    });
 
-    if (!provider) {
-      throw new NotFoundError(`Provider with ID: '${providerId}' not found.`);
-    }
+    console.log('Sequelize: ', sequelize);
 
-    console.log('Provider found:', JSON.stringify(provider));
+    const transaction = await sequelize.transaction();
 
-    const user = await User.findOne({
-      where: {
-        cognitoId: userId,
-      },
-    });
+    try {
+      const user = await User.findOne({
+        where: {
+          cognitoId: userId,
+        },
+        transaction,
+      });
 
-    if (!user) {
-      throw new NotFoundError(`User with Cognito ID: '${userId}' not found.`);
-    }
+      if (!user) {
+        throw new NotFoundError(`User with Cognito ID: '${userId}' not found.`);
+      }
 
-    console.log('User found: ', JSON.stringify(user));
+      console.log('User found: ', JSON.stringify(user));
 
-    const token = await Token.findOne({
-      where: {
-        userId: user.id,
-        providerId: provider.id,
-      },
-    });
+      const token = await Token.findOne({
+        where: {
+          userId: user.id,
+          providerId,
+        },
+        transaction,
+      });
 
-    const data = {
-      accessToken: body.access_token,
-      refreshToken: body.refresh_token,
-      expiry: body.expiry_time,
-      scope: body.scope,
-    };
-
-    if (token) {
-      console.log(
-        'Token already found for user and provider. Replacing token.'
+      await token.update(
+        {
+          accessToken: body.access_token,
+          refreshToken: body.refresh_token,
+          expiry: body.expiry_time,
+          scope: body.scope,
+        },
+        { transaction }
       );
 
-      await token.update(data);
-    } else {
-      console.log('User authenticating token for the first time.');
-
-      await Token.create({
-        ...data,
+      const { results: accounts } = await trueLayerClient.getAccounts({
+        providerId,
         userId: user.id,
-        providerId: provider.id,
+        tokens: {
+          accessToken: body.access_token,
+          refreshToken: body.refresh_token,
+        },
       });
+
+      await Promise.all(
+        accounts.map(async (account) => {
+          const asset = await Asset.create(
+            {
+              type: 'account',
+              accountId: account.account_id,
+              tokenId: token.id,
+            },
+            {
+              transaction,
+            }
+          );
+
+          await Account.create(
+            {
+              type: account.account_type,
+              name: account.display_name,
+              currency: account.currency,
+              accountNumber: account.account_number.number,
+              sortCode: account.account_number.sort_code,
+              iban: account.account_number.iban,
+              bic: account.account_number.bic
+              assetId: asset.id,
+            },
+            { transaction }
+          );
+
+          const { results: transactions } =
+            await trueLayerClient.getAccountTransactions({
+              providerId,
+              userId: user.id,
+              tokens: {
+                accessToken: body.access_token,
+                refreshToken: body.refresh_token,
+              },
+              accountId: account.account_id,
+            });
+
+          await Promise.all(
+            transactions.map(
+              async (t) =>
+                await Transaction.create(
+                  {
+                    transactionId: t.transaction_id,
+                    normalisedProviderTransactionId:
+                      t.normalised_provider_transaction_id,
+                    providerTransactionId: t.provider_transaction_id,
+                    timestamp: t.timestamp,
+                    description: t.description,
+                    amount: t.amount,
+                    currency: t.currency,
+                    type: t.transaction_type,
+                    classification: t.transaction_classification.join(', '),
+                    category: t.transaction_category,
+                    merchant: t.merchant_name,
+                    balanceAmount: t.running_balance.amount,
+                    balanceCurrency: t.running_balance.currency,
+                    meta: JSON.stringify(t.meta),
+                    assetId: asset.id,
+                  },
+                  { transaction }
+                )
+            )
+          );
+        })
+      );
+
+      await transaction.commit();
+    } catch (err) {
+      await transaction.rollback();
+
+      console.log('Error authentication provider: ', JSON.stringify(err));
+
+      return {
+        statusCode: 500,
+        body: {
+          message: err.message,
+        },
+      };
     }
 
     return {

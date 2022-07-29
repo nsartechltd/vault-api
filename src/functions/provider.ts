@@ -2,6 +2,7 @@ import type { APIGatewayEvent } from 'aws-lambda';
 
 import {
   retrieveProviders,
+  authenticateProvider,
   retrieveUserProviders,
   retrieveUserProviderAccounts,
   retrieveUserProviderAccountBalance,
@@ -9,6 +10,8 @@ import {
 } from '../services/provider';
 
 export const getProviders = async () => retrieveProviders();
+export const authProvider = async (event: APIGatewayEvent) =>
+  authenticateProvider(event);
 export const getUserProviders = async (event: APIGatewayEvent) =>
   retrieveUserProviders(event);
 export const getUserProviderAccounts = async (event: APIGatewayEvent) =>

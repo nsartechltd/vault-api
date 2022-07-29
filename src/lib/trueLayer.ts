@@ -31,7 +31,11 @@ const request = async (
   }
 
   const response = await fetch(url, request);
-  return await response.json();
+  const data = await response.json();
+
+  console.log('Data retrieved from TrueLayer: ', data);
+
+  return data;
 };
 
 const authFetchRequest = (

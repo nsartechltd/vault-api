@@ -1,7 +1,6 @@
 const created_at = new Date();
 const updated_at = new Date();
 
-const providerId = 'oauth-starling';
 const email = 'n6rayan@gmail.com';
 
 module.exports = {
@@ -9,17 +8,6 @@ module.exports = {
     const transaction = await queryInterface.sequelize.transaction();
 
     try {
-      const [{ id: provider_id }] = await queryInterface.sequelize.query(
-        'SELECT id FROM provider WHERE provider_id = :providerId',
-        {
-          replacements: {
-            providerId,
-          },
-          type: Sequelize.QueryTypes.SELECT,
-          transaction,
-        }
-      );
-
       const [{ id: user_id }] = await queryInterface.sequelize.query(
         'SELECT * FROM user WHERE email = :email',
         {
@@ -40,7 +28,9 @@ module.exports = {
             expiry: 12345,
             scope: 'scopes',
             user_id,
-            provider_id,
+            provider_id: 'oauth-starling',
+            logo_url:
+              'https://truelayer-provider-assets.s3.amazonaws.com/global/logos/starling.svg',
             created_at,
             updated_at,
           },

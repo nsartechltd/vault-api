@@ -2,8 +2,10 @@ import { Sequelize, DataTypes } from 'sequelize';
 
 const env = process.env.NODE_ENV;
 import config from '../config';
-import Provider from './Provider';
+import Account from './Account';
+import Asset from './Asset';
 import Token from './Token';
+import Transaction from './Transaction';
 import User from './User';
 
 const dbConfig = config[env];
@@ -16,7 +18,7 @@ type DBType = {
 
 const db: DBType = {};
 
-const models = [Provider, Token, User];
+const models = [Account, Asset, Token, Transaction, User];
 
 models.forEach((model) => {
   const instance = model(sequelize, DataTypes);

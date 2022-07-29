@@ -4,36 +4,8 @@ import base from './base';
 import * as trueLayerClient from '../lib/trueLayer';
 import { NotFoundError } from '../lib/errors';
 
-const SUPPORTED_PROVIDERS = [
-  'ob-natwest',
-  'ob-hsbc',
-  'ob-tide',
-  'ob-tesco',
-  'ob-halifax',
-  'ob-lloyds',
-  'ob-rbs',
-  'ob-santander',
-  'ob-tsb',
-  'ob-monzo',
-  'ob-barclays',
-  'ob-virgin-money',
-  'oauth-starling',
-  'ob-first-direct',
-  'ob-bos',
-  'ob-nationwide',
-  'ob-revolut',
-  'mock',
-];
-
-/**
- * We only support providers with the following criteria:
- *  - Based in the UK
- *  - Has the 'accounts' scope
- *  - Well known provider in the UK
- */
-const filterProviders = (provider) =>
-  provider.country === 'uk' &&
-  SUPPORTED_PROVIDERS.includes(provider.provider_id);
+// We only support providers that are based in the UK
+const filterProviders = (provider) => provider.country === 'uk';
 
 export const retrieveProviders = () =>
   base(async () => {
@@ -48,13 +20,36 @@ export const retrieveProviders = () =>
     };
   });
 
+export const authenticateProvider = (event) =>
+  base(async (sequelize) => {
+    const { logoUrl, trueLayerId, userId } = JSON.parse(event.body);
+
+    const { Token, User } = sequelize.models;
+
+    const user = await User.findOne({
+      where: {
+        cognito_id: userId,
+      },
+    });
+
+    await Token.create({
+      logoUrl,
+      providerId: trueLayerId,
+      userId: user.id,
+    });
+
+    return {
+      statusCode: 201,
+    };
+  });
+
 export const retrieveUserProviders = (event: APIGatewayEvent) =>
   base(async (sequelize) => {
     const {
       pathParameters: { userId },
     } = event;
 
-    const { Provider, User, Token } = sequelize.models;
+    const { User, Token } = sequelize.models;
 
     const user = await User.findOne({
       where: {
@@ -68,11 +63,6 @@ export const retrieveUserProviders = (event: APIGatewayEvent) =>
 
     const tokens = await Token.findAll({
       where: { userId: user.id },
-      attributes: ['id', 'createdAt'],
-      include: {
-        model: Provider,
-        attributes: ['id', 'name', 'providerId', 'country', 'logoUrl'],
-      },
     });
 
     console.log('User tokens found: ', JSON.stringify(tokens));
@@ -90,7 +80,7 @@ export const retrieveUserProviderAccounts = (event: APIGatewayEvent) =>
       pathParameters: { userId, providerId },
     } = event;
 
-    const { User, Token } = sequelize.models;
+    const { Account, Asset, Token, User } = sequelize.models;
 
     const user = await User.findOne({
       where: {
@@ -104,30 +94,33 @@ export const retrieveUserProviderAccounts = (event: APIGatewayEvent) =>
 
     console.log('User found: ', JSON.stringify(user));
 
-    const tokens = await Token.findOne({
-      where: { userId: user.id, providerId },
-      attributes: ['accessToken', 'refreshToken'],
+    const token = await Token.findOne({
+      where: { user_id: user.id, providerId },
+      attributes: ['id'],
     });
 
-    if (!tokens) {
+    if (!token) {
       throw new NotFoundError(
         `Token with ID: '${providerId}' and User ID: '${user.id}' not found.`
       );
     }
 
-    console.log('User tokens found: ', JSON.stringify(tokens));
+    console.log('User token found: ', JSON.stringify(token));
 
-    const body = await trueLayerClient.getAccounts({
-      tokens,
-      userId: user.id,
-      providerId,
+    const assets = await Asset.findAll({
+      where: { token_id: token.id },
+      include: Account,
     });
 
-    console.log('Accounts retrieved from TrueLayer: ', JSON.stringify(body));
+    if (!assets) {
+      throw new NotFoundError(`Asset with token ID: ${token.id} not found.`);
+    }
+
+    console.log('Assets found: ', JSON.stringify(assets));
 
     return {
       body: {
-        accounts: body.results,
+        accounts: assets,
       },
     };
   });
@@ -193,11 +186,13 @@ export const retrieveUserProviderAccountTransactions = (
   event: APIGatewayEvent
 ) =>
   base(async (sequelize) => {
+    console.log('Event received: ', event);
+
     const {
-      pathParameters: { userId, providerId, accountId },
+      pathParameters: { userId, accountId },
     } = event;
 
-    const { User, Token } = sequelize.models;
+    const { Asset, Transaction, User } = sequelize.models;
 
     const user = await User.findOne({
       where: {
@@ -211,34 +206,22 @@ export const retrieveUserProviderAccountTransactions = (
 
     console.log('User found: ', JSON.stringify(user));
 
-    const tokens = await Token.findOne({
-      where: { userId: user.id, providerId },
-      attributes: ['accessToken', 'refreshToken'],
+    const asset = await Asset.findOne({
+      where: { accountId },
+      include: Transaction,
     });
 
-    if (!tokens) {
+    if (!asset) {
       throw new NotFoundError(
-        `Token with ID: '${providerId}' and User ID: '${user.id}' not found.`
+        `Asset with account ID: '${accountId}' not found.`
       );
     }
 
-    console.log('User tokens found: ', JSON.stringify(tokens));
-
-    const body = await trueLayerClient.getAccountTransactions({
-      tokens,
-      providerId,
-      userId: user.id,
-      accountId,
-    });
-
-    console.log(
-      'Account balance retrieved from TrueLayer: ',
-      JSON.stringify(body)
-    );
+    console.log('Asset found: ', JSON.stringify(asset));
 
     return {
       body: {
-        transactions: body.results,
+        transactions: asset.Transactions,
       },
     };
   });
