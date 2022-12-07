@@ -12,14 +12,14 @@ module.exports = {
             primaryKey: true,
             type: Sequelize.INTEGER,
           },
-          tokenId: {
+          providerId: {
             type: Sequelize.INTEGER,
-            field: 'token_id',
+            field: 'provider_id',
             allowNull: false,
             references: {
-              model: 'token',
+              model: 'provider',
               key: 'id',
-              as: 'tokenId',
+              as: 'providerId',
             },
           },
           accountId: {

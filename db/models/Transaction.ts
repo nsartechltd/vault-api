@@ -26,7 +26,7 @@ export default (sequelize: Sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Transaction.belongsTo(models.Asset, { foreignKey: 'assetId' });
+      Transaction.belongsTo(models.Asset);
     }
   }
 

@@ -46,6 +46,9 @@ module.exports = {
           iban: {
             type: Sequelize.STRING,
           },
+          bic: {
+            type: Sequelize.STRING,
+          },
           createdAt: {
             allowNull: false,
             type: Sequelize.DATE,

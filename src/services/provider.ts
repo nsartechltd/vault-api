@@ -4,9 +4,6 @@ import base from './base';
 import * as trueLayerClient from '../lib/trueLayer';
 import { NotFoundError } from '../lib/errors';
 
-// We only support providers that are based in the UK
-const filterProviders = (provider) => provider.country === 'uk';
-
 export const retrieveProviders = () =>
   base(async () => {
     const body = await trueLayerClient.getProviders();
@@ -15,7 +12,8 @@ export const retrieveProviders = () =>
 
     return {
       body: {
-        providers: body.filter(filterProviders),
+        // We only support providers that are based in the UK
+        providers: body.filter((provider) => provider.country === 'uk'),
       },
     };
   });
@@ -24,7 +22,7 @@ export const authenticateProvider = (event) =>
   base(async (sequelize) => {
     const { logoUrl, trueLayerId, userId } = JSON.parse(event.body);
 
-    const { Token, User } = sequelize.models;
+    const { Provider, User } = sequelize.models;
 
     const user = await User.findOne({
       where: {
@@ -32,10 +30,16 @@ export const authenticateProvider = (event) =>
       },
     });
 
-    await Token.create({
+    if (!user) {
+      throw new NotFoundError(`User with Cognito ID: '${userId}' not found.`);
+    }
+
+    console.log('User found: ', JSON.stringify(user));
+
+    await Provider.create({
       logoUrl,
-      providerId: trueLayerId,
-      userId: user.id,
+      trueLayerId,
+      UserId: user.id,
     });
 
     return {
@@ -49,7 +53,7 @@ export const retrieveUserProviders = (event: APIGatewayEvent) =>
       pathParameters: { userId },
     } = event;
 
-    const { User, Token } = sequelize.models;
+    const { User, Provider } = sequelize.models;
 
     const user = await User.findOne({
       where: {
@@ -61,15 +65,15 @@ export const retrieveUserProviders = (event: APIGatewayEvent) =>
       throw new NotFoundError(`User with Cognito ID: '${userId}' not found.`);
     }
 
-    const tokens = await Token.findAll({
-      where: { userId: user.id },
+    const providers = await Provider.findAll({
+      where: { user_id: user.id },
     });
 
-    console.log('User tokens found: ', JSON.stringify(tokens));
+    console.log('User providers found: ', JSON.stringify(providers));
 
     return {
       body: {
-        providers: tokens,
+        providers: providers,
       },
     };
   });
@@ -80,7 +84,7 @@ export const retrieveUserProviderAccounts = (event: APIGatewayEvent) =>
       pathParameters: { userId, providerId },
     } = event;
 
-    const { Account, Asset, Token, User } = sequelize.models;
+    const { Account, Asset, Provider, User } = sequelize.models;
 
     const user = await User.findOne({
       where: {
@@ -94,33 +98,44 @@ export const retrieveUserProviderAccounts = (event: APIGatewayEvent) =>
 
     console.log('User found: ', JSON.stringify(user));
 
-    const token = await Token.findOne({
-      where: { user_id: user.id, providerId },
+    const provider = await Provider.findOne({
+      where: { user_id: user.id, true_layer_id: providerId },
       attributes: ['id'],
     });
 
-    if (!token) {
+    if (!provider) {
       throw new NotFoundError(
-        `Token with ID: '${providerId}' and User ID: '${user.id}' not found.`
+        `Provider with ID: '${providerId}' and User ID: '${user.id}' not found.`
       );
     }
 
-    console.log('User token found: ', JSON.stringify(token));
+    console.log('User Provider found: ', JSON.stringify(provider));
 
     const assets = await Asset.findAll({
-      where: { token_id: token.id },
+      where: { ProviderId: provider.id },
       include: Account,
+      raw: true,
+      nest: true,
     });
 
     if (!assets) {
-      throw new NotFoundError(`Asset with token ID: ${token.id} not found.`);
+      throw new NotFoundError(
+        `Asset with Provider ID: ${provider.id} not found.`
+      );
     }
 
     console.log('Assets found: ', JSON.stringify(assets));
 
+    const something = assets.map((asset) => ({
+      ...asset,
+      providerId,
+    }));
+
+    console.log('SOMETHING: ', something);
+
     return {
       body: {
-        accounts: assets,
+        accounts: something,
       },
     };
   });
@@ -131,7 +146,7 @@ export const retrieveUserProviderAccountBalance = (event: APIGatewayEvent) =>
       pathParameters: { userId, providerId, accountId },
     } = event;
 
-    const { User, Token } = sequelize.models;
+    const { User, Provider } = sequelize.models;
 
     const user = await User.findOne({
       where: {
@@ -145,21 +160,21 @@ export const retrieveUserProviderAccountBalance = (event: APIGatewayEvent) =>
 
     console.log('User found: ', JSON.stringify(user));
 
-    const tokens = await Token.findOne({
-      where: { userId: user.id, providerId },
+    const providers = await Provider.findOne({
+      where: { user_id: user.id, true_layer_id: providerId },
       attributes: ['accessToken', 'refreshToken'],
     });
 
-    if (!tokens) {
+    if (!providers) {
       throw new NotFoundError(
-        `Token with ID: '${providerId}' and User ID: '${user.id}' not found.`
+        `Provider with ID: '${providerId}' and User ID: '${user.id}' not found.`
       );
     }
 
-    console.log('User tokens found: ', JSON.stringify(tokens));
+    console.log('User providers found: ', JSON.stringify(providers));
 
     const body = await trueLayerClient.getAccountBalance({
-      tokens,
+      tokens: providers,
       accountId,
       providerId,
       userId: user.id,

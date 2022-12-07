@@ -7,7 +7,11 @@ module.exports = {
         transaction,
       });
 
-      await queryInterface.changeColumn(
+      await queryInterface.removeColumn('token', 'provider_id', {
+        transaction,
+      });
+
+      await queryInterface.addColumn(
         'token',
         'provider_id',
         {

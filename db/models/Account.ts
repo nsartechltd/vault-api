@@ -8,6 +8,7 @@ type AccountType = {
   accountNumber: string;
   sortCode: string;
   iban: string;
+  bic: string;
 };
 
 export default (sequelize: Sequelize, DataTypes) => {
@@ -18,7 +19,7 @@ export default (sequelize: Sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Account.belongsTo(models.Asset, { foreignKey: 'assetId' });
+      Account.belongsTo(models.Asset);
     }
   }
 
@@ -30,6 +31,7 @@ export default (sequelize: Sequelize, DataTypes) => {
       accountNumber: DataTypes.STRING,
       sortCode: DataTypes.STRING,
       iban: DataTypes.STRING,
+      bic: DataTypes.STRING,
     },
     {
       sequelize,

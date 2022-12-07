@@ -14,7 +14,7 @@ export default (sequelize: Sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Asset.belongsTo(models.Token);
+      Asset.belongsTo(models.Provider);
       Asset.hasMany(models.Transaction);
       Asset.hasOne(models.Account);
     }

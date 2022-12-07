@@ -13,17 +13,13 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
 
     const body = await trueLayerClient.getAccessToken(code);
 
-    console.log('Data received from request: ', body);
-
     if (!body.access_token) {
       throw new AuthError('Unauthorised');
     }
 
-    const { Account, Asset, Token, Transaction, User } = sequelize.models;
+    const { Account, Asset, Provider, Transaction, User } = sequelize.models;
 
     const { connector_id: providerId } = jwt.decode(body.access_token);
-
-    console.log('Sequelize: ', sequelize);
 
     const transaction = await sequelize.transaction();
 
@@ -41,15 +37,15 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
 
       console.log('User found: ', JSON.stringify(user));
 
-      const token = await Token.findOne({
+      const provider = await Provider.findOne({
         where: {
-          userId: user.id,
-          providerId,
+          user_id: user.id,
+          providerId: providerId,
         },
         transaction,
       });
 
-      await token.update(
+      await provider.update(
         {
           accessToken: body.access_token,
           refreshToken: body.refresh_token,
@@ -74,7 +70,7 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
             {
               type: 'account',
               accountId: account.account_id,
-              tokenId: token.id,
+              ProviderId: provider.id,
             },
             {
               transaction,
@@ -89,8 +85,8 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
               accountNumber: account.account_number.number,
               sortCode: account.account_number.sort_code,
               iban: account.account_number.iban,
-              bic: account.account_number.bic
-              assetId: asset.id,
+              bic: account.account_number.swift_bic,
+              AssetId: asset.id,
             },
             { transaction }
           );
@@ -126,7 +122,7 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
                     balanceAmount: t.running_balance.amount,
                     balanceCurrency: t.running_balance.currency,
                     meta: JSON.stringify(t.meta),
-                    assetId: asset.id,
+                    AssetId: asset.id,
                   },
                   { transaction }
                 )
@@ -136,10 +132,14 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
       );
 
       await transaction.commit();
+
+      return {
+        statusCode: 204,
+      };
     } catch (err) {
       await transaction.rollback();
 
-      console.log('Error authentication provider: ', JSON.stringify(err));
+      console.log('Error authenticating provider: ', JSON.stringify(err));
 
       return {
         statusCode: 500,
@@ -148,8 +148,4 @@ export const authenticateProvider = async (event: APIGatewayEvent) =>
         },
       };
     }
-
-    return {
-      statusCode: 204,
-    };
   });
