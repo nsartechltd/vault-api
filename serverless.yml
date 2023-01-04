@@ -31,7 +31,7 @@ provider:
     subnetIds: ${ssm:/vault/PRIVATE_SUBNET_IDS~split}
 
 custom:
-  logRetentionInDays: 2
+  logRetentionInDays: 3
   serverless-offline:
     host: 0.0.0.0
     httpPort: 3001
