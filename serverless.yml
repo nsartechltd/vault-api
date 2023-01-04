@@ -2,12 +2,13 @@ service: nsartech-vault-api
 
 plugins:
   - serverless-plugin-typescript
+  - serverless-plugin-log-retention
   - serverless-domain-manager
   - serverless-offline
 
 provider:
   name: aws
-  runtime: nodejs14.x
+  runtime: nodejs16.x
   region: ${opt:region, 'eu-west-2'}
   stage: ${opt:stage, 'dev'}
   lambdaHashingVersion: 20201221
@@ -30,6 +31,7 @@ provider:
     subnetIds: ${ssm:/vault/PRIVATE_SUBNET_IDS~split}
 
 custom:
+  logRetentionInDays: 2
   serverless-offline:
     host: 0.0.0.0
     httpPort: 3001
