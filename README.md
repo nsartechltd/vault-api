@@ -5,7 +5,7 @@
 To use this repo you will need the following:
 
 1. [nvm][nvm] to install, run `curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.34.0/install.sh | bash` to install.
-1. [Node.js v16][nodejs]: If you have `nvm` installed you can run `nvm install 14` to install (this is recommended).
+1. [Node.js v16][nodejs]: If you have `nvm` installed you can run `nvm install 16` to install (this is recommended).
 1. [Docker >= 20.10.6][docker]: To run locally
 1. [docker-compose >= 1.29.1][dockercompose]: To run locally
 
