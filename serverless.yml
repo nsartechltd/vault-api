@@ -45,7 +45,7 @@ custom:
   customDomain:
     rest:
       domainName: ${self:custom.domain}
-      createRoute53Record: false # managed by terraform in the root account
+      createRoute53Record: false # managed in root account
       endpointType: "regional"
       certificateArn: ${ssm:/nsar-tech/CERTIFICATE_ARN}
       autoDomain: true
